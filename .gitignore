@@ -1,0 +1,4 @@
+# Dependency directories
+node_modules/
+product-service/.serverless
+package-lock.json
