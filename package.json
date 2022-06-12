@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "deploy": "cd ./product-service && sls deploy && cd ..",
-    "test": "node ./test.mjs"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/unstoo/rss-aws-unstoo#readme",
   "devDependencies": {
+    "jest": "^28.1.1",
     "serverless-auto-swagger": "^2.5.1"
   }
 }

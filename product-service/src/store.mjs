@@ -5,7 +5,7 @@ const fetchAll = async () => new Promise((resolve, reject) => {
 });
 
 const fetchById = async (id) => new Promise((resolve, reject) => {
-  const product = productsList.find(item => String(item.productId) === id);
+  const product = productsList.find(item => String(item.productId) === String(id));
   setTimeout(() => resolve(product), 1500);
 });
 
