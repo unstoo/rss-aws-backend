@@ -1,13 +1,68 @@
-import { productsList } from "./products.mjs";
+import pg from 'pg';
 
-const fetchAll = async () => new Promise((resolve, reject) => {
-  setTimeout(() => resolve(productsList), 500);
-});
+const { user, password, database, host, port } = process.env;
+const { Client } = pg;
+const client = new Client({ user, password, database, host, port })
 
-const fetchById = async (id) => new Promise((resolve, reject) => {
-  const product = productsList.find(item => String(item.productId) === String(id));
-  setTimeout(() => resolve(product), 1500);
-});
+
+const fetchAll = async () => {
+  try {
+    await client.connect();
+    console.log(`DB connected`);
+  } catch (err) {
+    console.error(`DB Connect Failed: ${JSON.stringify(err)} ${JSON.stringify({ user, password, database, host, port })}`);
+    client.end();
+    return err;
+  }
+
+  try {
+    const query = 'select * from products left join stocks on products.id = stocks.product_id;';
+    const res = await client.query(query);
+    return res.rows.map(({ id, title, description, price, count }) => {
+
+      return {
+        id, title, description, price, count
+      };
+    });
+  } catch (err) {
+    console.error(`DB SELECT Failed: ${JSON.stringify(err)}`);
+    return err;
+  } finally {
+    client.end();
+  }
+
+};
+
+const fetchById = async (id) => {
+  try {
+    await client.connect();
+    console.log(`DB connected`);
+  } catch (err) {
+    console.error(`DB Connect Failed: ${JSON.stringify(err)} ${JSON.stringify({ user, password, database, host, port })}`);
+    client.end();
+    return err;
+  }
+
+  try {
+    const query = {
+      text: 'select * from products left join stocks on products.id = stocks.product_id where product_id = $1;',
+      values: [id],
+    }
+    const res = await client.query(query);
+
+    return res.rows.map(({ id, title, description, price, count }) => {
+
+      return {
+        id, title, description, price, count
+      };
+    });
+  } catch (err) {
+    console.error(`DB SELECT Failed: ${JSON.stringify(err)}`);
+    return err;
+  } finally {
+    client.end();
+  }
+};
 
 export const productsStore = {
   fetchById,
