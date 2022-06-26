@@ -1,0 +1,25 @@
+{
+  "name": "rss-aws-unstoo",
+  "version": "1.0.0",
+  "description": "First steps in modern cloud development with Node.js [course](https://github.com/EPAM-JS-Competency-center/cloud-development-course-initial).",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "cd ./product-service && sls deploy && cd ..",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unstoo/rss-aws-unstoo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unstoo/rss-aws-unstoo/issues"
+  },
+  "homepage": "https://github.com/unstoo/rss-aws-unstoo#readme",
+  "devDependencies": {
+    "jest": "^28.1.1",
+    "serverless-auto-swagger": "^2.5.1"
+  }
+}
