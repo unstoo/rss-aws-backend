@@ -25,6 +25,8 @@ function parseParams(body) {
   const { title, description = '', price = 0 } = result.body;
 
   if (!title) return { error: 'Title is required', params: null };
+  if (!Number.isInteger(price)) return { error: 'Incorrect price format', params: null };
+
   return {
     error: null, params: {
       title, description, price,
