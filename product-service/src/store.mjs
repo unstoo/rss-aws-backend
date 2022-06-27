@@ -56,7 +56,7 @@ const fetchById = async (id) => {
   }
 };
 
-const addProduct = async ({ title, description, price }) => {
+const addProduct = async ({ title, description, price, count }) => {
   let client;
   try {
     client = await pool.connect();
@@ -76,7 +76,7 @@ const addProduct = async ({ title, description, price }) => {
 
     const insertStocksQuery = {
       text: 'INSERT INTO stocks(product_id, count) VALUES ($1, $2)',
-      values: [res.rows[0].id, 33],
+      values: [res.rows[0].id, count],
     };
     await client.query(insertStocksQuery)
     await client.query('COMMIT')

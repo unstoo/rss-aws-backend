@@ -19,7 +19,7 @@ function parseParams(body) {
   const result = parseBody(body);
   if (result.error) return result;
 
-  const { title, description = '', price = 0 } = result.body;
+  const { title, description = '', price = 0, count = 1 } = result.body;
 
   if (!title) return { error: 'Title is required', params: null };
   if (!Number.isInteger(price)) return { error: 'Incorrect price format', params: null };
@@ -27,7 +27,7 @@ function parseParams(body) {
   return {
     error: null,
     params: {
-      title, description, price,
+      title, description, price, count,
     },
   };
 }
