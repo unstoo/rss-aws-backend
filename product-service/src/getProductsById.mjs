@@ -3,6 +3,7 @@ import { productsStore } from "./store.mjs";
 
 export const getProductsById = async (event) => {
   const { productId } = event.pathParameters;
+  console.log({ productId: productId });
   try {
     const product = await productsStore.fetchById(productId);
     const statusCode = product ? 200 : 404;

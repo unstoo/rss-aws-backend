@@ -1,6 +1,7 @@
 import { productsStore } from "./store.mjs";
 
 export const getProductsList = async (event) => {
+  console.log({ getProductsList: '' });
   const products = await productsStore.fetchAll();
   const productsAreValid = Array.isArray(products);
   const statusCode = productsAreValid ? 200 : 500;

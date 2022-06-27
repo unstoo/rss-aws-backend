@@ -1,6 +1,7 @@
 import { productsStore } from "./store.mjs";
 
 export const addProduct = async (event) => {
+  console.log({ addProduct: event.body });
   const { error, params } = parseParams(event.body);
   if (error) return makeResponse(400, params);
 
