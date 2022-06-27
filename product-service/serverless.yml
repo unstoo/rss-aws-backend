@@ -30,3 +30,10 @@ functions:
       - httpApi:
           method: GET
           path: /products
+  addProduct:
+    handler: index.addProduct
+    events:
+      - httpApi:
+          method: POST
+          path: /products
+
