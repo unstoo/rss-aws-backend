@@ -8,10 +8,8 @@ const fetchAll = async () => {
   let client;
   try {
     client = await pool.connect();
-    console.log(`DB connected`);
   } catch (err) {
-    console.error(`DB Connect Failed: ${String(err)}`);
-    client.end();
+    client.release();
     return { error: String(err), result: null };
   }
 
@@ -28,7 +26,7 @@ const fetchAll = async () => {
     console.error(`DB SELECT Failed: ${JSON.stringify(err)}`);
     return { error: String(err), result: null };
   } finally {
-    client.end();
+    client.release();
   }
 };
 
@@ -37,10 +35,8 @@ const fetchById = async (id) => {
   let client;
   try {
     client = await pool.connect();
-    console.log(`DB connected`);
   } catch (err) {
-    console.error(`DB Connect Failed: ${String(err)}`);
-    client.end();
+    client.release();
     return { error: String(err), result: null };
   }
 
@@ -54,10 +50,9 @@ const fetchById = async (id) => {
     return { error: null, result: res.rows[0] };
 
   } catch (err) {
-    console.error(`DB SELECT Failed: ${JSON.stringify(err)}`);
     return { error: 404, result: null };
   } finally {
-    client.end();
+    client.release();
   }
 };
 
@@ -65,10 +60,8 @@ const addProduct = async ({ title, description, price }) => {
   let client;
   try {
     client = await pool.connect();
-    console.log(`DB connected`);
   } catch (err) {
-    console.error(`DB Connect Failed: ${String(err)}`);
-    client.end();
+    client.release();
     return { error: String(err), result: null };
   }
   try {
@@ -98,7 +91,7 @@ const addProduct = async ({ title, description, price }) => {
       result: null,
     };
   } finally {
-    client.release()
+    client.release();
   }
 };
 
