@@ -1,31 +1,32 @@
 import pg from 'pg';
 
 const { user, password, database, host, port } = process.env;
-const { Client } = pg;
-const client = new Client({ user, password, database, host, port })
+const { Pool } = pg;
+const pool = new Pool({ user, password, database, host, port });
 
 const fetchAll = async () => {
+  let client;
   try {
-    await client.connect();
+    client = await pool.connect();
     console.log(`DB connected`);
   } catch (err) {
-    console.error(`DB Connect Failed: ${JSON.stringify(err)} ${JSON.stringify({ user, password, database, host, port })}`);
+    console.error(`DB Connect Failed: ${String(err)}`);
     client.end();
-    return err;
+    return { error: String(err), result: null };
   }
 
   try {
     const query = 'select * from products left join stocks on products.id = stocks.product_id;';
     const res = await client.query(query);
-    return res.rows.map(({ id, title, description, price, count }) => {
-
+    const result = res.rows.map(({ id, title, description, price, count }) => {
       return {
         id, title, description, price, count
       };
     });
+    return { error: null, result };
   } catch (err) {
     console.error(`DB SELECT Failed: ${JSON.stringify(err)}`);
-    return err;
+    return { error: String(err), result: null };
   } finally {
     client.end();
   }
@@ -33,63 +34,74 @@ const fetchAll = async () => {
 
 
 const fetchById = async (id) => {
+  let client;
   try {
-    await client.connect();
+    client = await pool.connect();
     console.log(`DB connected`);
   } catch (err) {
-    console.error(`DB Connect Failed: ${JSON.stringify(err)} ${JSON.stringify({ user, password, database, host, port })}`);
+    console.error(`DB Connect Failed: ${String(err)}`);
     client.end();
-    return err;
+    return { error: String(err), result: null };
   }
 
   try {
     const query = {
       text: 'select * from products left join stocks on products.id = stocks.product_id where product_id = $1;',
       values: [id],
-    }
+    };
     const res = await client.query(query);
 
-    return res.rows.map(({ id, title, description, price, count }) => {
+    return { error: null, result: res.rows[0] };
 
-      return {
-        id, title, description, price, count
-      };
-    });
   } catch (err) {
     console.error(`DB SELECT Failed: ${JSON.stringify(err)}`);
-    return err;
+    return { error: 404, result: null };
   } finally {
     client.end();
   }
 };
+
 const addProduct = async ({ title, description, price }) => {
+  let client;
   try {
-    await client.connect();
+    client = await pool.connect();
     console.log(`DB connected`);
   } catch (err) {
-    console.error(`DB Connect Failed: ${JSON.stringify(err)} ${JSON.stringify({ user, password, database, host, port })}`);
+    console.error(`DB Connect Failed: ${String(err)}`);
     client.end();
     return { error: String(err), result: null };
   }
-
   try {
-    const query = {
+    await client.query('BEGIN');
+
+    const insertProductQuery = {
       text: 'insert into products (title, description, price) values ($1, $2, $3) returning *',
       values: [title, description, price],
-    }
-    const res = await client.query(query);
+    };
+    const res = await client.query(insertProductQuery);
+
+
+    const insertStocksQuery = {
+      text: 'INSERT INTO stocks(product_id, count) VALUES ($1, $2)',
+      values: [res.rows[0].id, 33],
+    };
+    await client.query(insertStocksQuery)
+    await client.query('COMMIT')
     return {
       error: null,
       result: res.rows[0],
     };
-
-  } catch (err) {
-    console.error(`DB INSERT Failed: ${JSON.stringify(err)}`);
-    return { error: String(err), result: null };
+  } catch (e) {
+    await client.query('ROLLBACK')
+    return {
+      error: String(e),
+      result: null,
+    };
   } finally {
-    client.end();
+    client.release()
   }
 };
+
 export const productsStore = {
   fetchById,
   fetchAll,

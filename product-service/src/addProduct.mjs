@@ -2,21 +2,17 @@ import { productsStore } from "./store.mjs";
 
 export const addProduct = async (event) => {
   console.log({ addProduct: event.body });
+
   const { error, params } = parseParams(event.body);
-  if (error) return makeResponse(400, params);
+  if (error) return { statusCode: 400, body: error };
 
   const dbRes = await productsStore.addProduct(params);
-  if (dbRes.error) return makeResponse(500, 'Server error');
+  if (dbRes.error) return { statusCode: 500, body: dbRes.error };
 
-  return makeResponse(200, { product: dbRes.result })
-};
-
-function parseBody(body) {
-  try {
-    return { error: null, body: JSON.parse(body) }
-  } catch (e) {
-    return { error: String(e), body: null };
-  }
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ product: dbRes.result }, null, 2),
+  };
 };
 
 function parseParams(body) {
@@ -29,15 +25,17 @@ function parseParams(body) {
   if (!Number.isInteger(price)) return { error: 'Incorrect price format', params: null };
 
   return {
-    error: null, params: {
+    error: null,
+    params: {
       title, description, price,
     },
   };
 }
 
-function makeResponse(statusCode, body) {
-  return {
-    statusCode,
-    body: JSON.stringify(body, null, 2),
-  };
+function parseBody(body) {
+  try {
+    return { error: null, body: JSON.parse(body) }
+  } catch (e) {
+    return { error: String(e), body: null };
+  }
 };

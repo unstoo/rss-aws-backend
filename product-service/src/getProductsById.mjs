@@ -4,25 +4,24 @@ import { productsStore } from "./store.mjs";
 export const getProductsById = async (event) => {
   const { productId } = event.pathParameters;
   console.log({ productId: productId });
-  try {
-    const product = await productsStore.fetchById(productId);
-    const statusCode = product ? 200 : 404;
-    const body = product ? { product } : { message: 'Product not found' }
+
+  const { error, result } = await productsStore.fetchById(productId);
+
+  if (result && result.id)
     return {
-      statusCode,
-      body: JSON.stringify(body, null, 2),
+      statusCode: 200,
+      body: JSON.stringify({ product: result }, null, 2),
     };
-  } catch (e) {
+
+  if (error === 404)
     return {
-      statusCode: 500,
-      body: JSON.stringify(
-        {
-          statusCode: 500,
-          message: String(e)
-        },
-        null,
-        2
-      ),
+      statusCode: 404,
+      body: 'Product not found',
     };
-  }
+
+  return {
+    statusCode: 500,
+    body: error,
+  };
+
 };
