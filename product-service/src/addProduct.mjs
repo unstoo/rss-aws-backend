@@ -10,7 +10,7 @@ export const addProduct = async (event) => {
   if (dbRes.error) return { statusCode: dbRes.error, body: dbRes.result };
 
   return {
-    statusCode: 200,
+    statusCode: 201,
     body: JSON.stringify({ product: dbRes.result }, null, 2),
   };
 };
@@ -22,8 +22,8 @@ function parseParams(body) {
   const { title, description = '', price = 1, count = 1 } = result;
 
   if (!title) return { error: 'Title is required', result: null };
-  if (!Number.isInteger(price) && price < 1) return { error: 'Incorrect price format', result: null };
-  if (!Number.isInteger(count) && count < 1) return { error: 'Incorrect count format', result: null };
+  if (!Number.isInteger(price) || price < 1) return { error: 'Incorrect price format', result: null };
+  if (!Number.isInteger(count) || count < 1) return { error: 'Incorrect count format', result: null };
 
   return {
     error: null,
