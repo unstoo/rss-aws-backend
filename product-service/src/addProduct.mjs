@@ -21,9 +21,9 @@ function parseParams(body) {
 
   const { title, description = '', price = 1, count = 1 } = result;
 
-  if (!title) return { error: 'Title is required', result: null };
-  if (!Number.isInteger(price) || price < 1) return { error: 'Incorrect price format', result: null };
-  if (!Number.isInteger(count) || count < 1) return { error: 'Incorrect count format', result: null };
+  if (!title) return { error: 400, result: 'Title is required' };
+  if (!Number.isInteger(price) || price < 1) return { error: 400, result: 'Incorrect price format' };
+  if (!Number.isInteger(count) || count < 1) return { error: 400, result: 'Incorrect count format' };
 
   return {
     error: null,
