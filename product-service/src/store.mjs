@@ -9,7 +9,7 @@ const fetchAll = async () => {
   if (error) return { error: 500, result: error };
 
   try {
-    const query = 'select p.id, p.title, p.description, p.price, s.count from products as p left join stocks as s on p.id = s.product_id;';
+    const query = 'select p.id, p.title, p.description, p.price, s.count from products as p inner join stocks as s on p.id = s.product_id;';
     const res = await client.query(query);
     return { error: null, result: res.rows };
   } catch (err) {
@@ -26,7 +26,7 @@ const fetchById = async (id) => {
 
   try {
     const query = {
-      text: 'select p.id, p.title, p.description, p.price, s.count from products as p left join stocks as s on p.id = s.product_id where product_id = $1;',
+      text: 'select p.id, p.title, p.description, p.price, s.count from products as p inner join stocks as s on p.id = s.product_id where product_id = $1;',
       values: [id],
     };
     const res = await client.query(query);
