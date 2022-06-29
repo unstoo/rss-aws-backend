@@ -1,13 +1,11 @@
 import { productsStore } from "./store.mjs";
 
-
 export const getProductsById = async (event) => {
   const { productId } = event.pathParameters;
   console.log({ productId: productId });
-
   const { error, result } = await productsStore.fetchById(productId);
 
-  if (result && result.id)
+  if (!error)
     return {
       statusCode: 200,
       body: JSON.stringify({ product: result }, null, 2),
@@ -20,8 +18,7 @@ export const getProductsById = async (event) => {
     };
 
   return {
-    statusCode: 500,
-    body: error,
+    statusCode: error,
+    body: result,
   };
-
 };

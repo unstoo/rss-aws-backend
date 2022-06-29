@@ -4,7 +4,7 @@ export const getProductsList = async () => {
   console.log({ getProductsList: '' });
   const { error, result } = await productsStore.fetchAll();
 
-  if (error) return { statusCode: 500, body: error };
+  if (error) return { statusCode: error, body: result };
 
   return {
     statusCode: 200,

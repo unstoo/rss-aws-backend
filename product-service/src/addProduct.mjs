@@ -3,11 +3,11 @@ import { productsStore } from "./store.mjs";
 export const addProduct = async (event) => {
   console.log({ addProduct: event.body });
 
-  const { error, params } = parseParams(event.body);
-  if (error) return { statusCode: 400, body: error };
+  const { error, result } = parseParams(event.body);
+  if (error) return { statusCode: error, body: 'Data is invalid' };
 
-  const dbRes = await productsStore.addProduct(params);
-  if (dbRes.error) return { statusCode: 500, body: dbRes.error };
+  const dbRes = await productsStore.addProduct(result);
+  if (dbRes.error) return { statusCode: dbRes.error, body: dbRes.result };
 
   return {
     statusCode: 200,
@@ -16,26 +16,27 @@ export const addProduct = async (event) => {
 };
 
 function parseParams(body) {
-  const result = parseBody(body);
-  if (result.error) return result;
+  const { error, result } = parseBody(body);
+  if (error) return { error, result };
 
-  const { title, description = '', price = 0, count = 1 } = result.body;
+  const { title, description = '', price = 1, count = 1 } = result;
 
-  if (!title) return { error: 'Title is required', params: null };
-  if (!Number.isInteger(price)) return { error: 'Incorrect price format', params: null };
+  if (!title) return { error: 'Title is required', result: null };
+  if (!Number.isInteger(price) && price < 1) return { error: 'Incorrect price format', result: null };
+  if (!Number.isInteger(count) && count < 1) return { error: 'Incorrect count format', result: null };
 
   return {
     error: null,
-    params: {
+    result: {
       title, description, price, count,
     },
   };
-}
+};
 
 function parseBody(body) {
   try {
-    return { error: null, body: JSON.parse(body) }
+    return { error: null, result: JSON.parse(body) };
   } catch (e) {
-    return { error: String(e), body: null };
+    return { error: 400, result: String(e) };
   }
 };
