@@ -1,12 +1,13 @@
 import { productsStore } from "./store.mjs";
 
-export const getProductsList = async (event) => {
-  const products = await productsStore.fetchAll();
-  const productsAreValid = Array.isArray(products);
-  const statusCode = productsAreValid ? 200 : 500;
-  const body = productsAreValid ? { products } : { message: 'Bad server response' }
+export const getProductsList = async () => {
+  console.log({ getProductsList: '' });
+  const { error, result } = await productsStore.fetchAll();
+
+  if (error) return { statusCode: error, body: result };
+
   return {
-    statusCode,
-    body: JSON.stringify(body, null, 2),
+    statusCode: 200,
+    body: JSON.stringify({ products: result }, null, 2),
   };
 };

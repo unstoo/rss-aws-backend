@@ -7,6 +7,12 @@ provider:
   region: eu-central-1
   httpApi:
     cors: true
+  environment:
+    user: ${file(../db-config.json):user}
+    password: ${file(../db-config.json):password}
+    database: ${file(../db-config.json):database}
+    host: ${file(../db-config.json):host}  
+    port: ${file(../db-config.json):port}  
 
 plugins:
   - serverless-auto-swagger
@@ -24,3 +30,10 @@ functions:
       - httpApi:
           method: GET
           path: /products
+  addProduct:
+    handler: index.addProduct
+    events:
+      - httpApi:
+          method: POST
+          path: /products
+
