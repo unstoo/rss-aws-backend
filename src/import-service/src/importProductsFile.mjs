@@ -3,8 +3,8 @@ import AWS from 'aws-sdk';
 const s3 = new AWS.S3({ region: 'eu-central-1' });
 
 const mapParams = (fileName) => ({
-  Bucket: 'import-service-dev-serverlessdeploymentbucket-rthzbbah9s7a',
-  Key: 'uploads/' + fileName,
+  Bucket: 'csv-products-unstoo',
+  Key: 'uploaded/' + fileName,
   ContentType: 'text/csv',
   Expires: 60,
 });
@@ -16,7 +16,7 @@ const CORS_HEADERS = {
 
 export const importProductsFile = async (event) => {
   try {
-    const url = await s3.getSignedUrlPromise('putObject', mapParams(event?.queryStringParameters?.name));
+    const url = await s3.getSignedUrlPromise('putObject', mapParams(event.queryStringParameters.name));
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
