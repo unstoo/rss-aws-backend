@@ -8,11 +8,11 @@ provider:
   httpApi:
     cors: true
   environment:
-    user: ${file(../db-config.json):user}
-    password: ${file(../db-config.json):password}
-    database: ${file(../db-config.json):database}
-    host: ${file(../db-config.json):host}  
-    port: ${file(../db-config.json):port}  
+    user: ${file(../../db-config.json):user}
+    password: ${file(../../db-config.json):password}
+    database: ${file(../../db-config.json):database}
+    host: ${file(../../db-config.json):host}  
+    port: ${file(../../db-config.json):port}  
 
 plugins:
   - serverless-auto-swagger
@@ -36,4 +36,5 @@ functions:
       - httpApi:
           method: POST
           path: /products
+
 
