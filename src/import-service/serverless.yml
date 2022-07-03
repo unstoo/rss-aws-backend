@@ -12,6 +12,7 @@ provider:
         - "s3:*"
       Resource:
         - "arn:aws:s3:::csv-products-unstoo/*"
+        - "arn:aws:s3:::csv-products-unstoo"
 
 functions:
   importProductsFile:
