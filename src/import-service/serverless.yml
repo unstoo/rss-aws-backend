@@ -5,17 +5,17 @@ provider:
   name: aws
   runtime: nodejs16.x
   region: eu-central-1
-  # s3:
-  #   # Eventual additional properties in camel case
-  #   importFileBucket:
-  #     # Supported properties are the same ones as supported by CF resource for S3 bucket
-  #     # See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  #     name: unstoo-import-file-bucket
-  # # httpApi:
-  # #   cors: true 
 
-# plugins:
-#   - serverless-auto-swagger
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::import-service-dev-serverlessdeploymentbucket-rthzbbah9s7a"
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        - "arn:aws:s3:::import-service-dev-serverlessdeploymentbucket-rthzbbah9s7a/*"
 
 functions:
   importProductsFile:

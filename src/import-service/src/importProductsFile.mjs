@@ -9,31 +9,24 @@ const mapParams = (fileName) => ({
   Expires: 60,
 });
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': 'https://danuc0jvfezp6.cloudfront.net',
+  'Access-Control-Allow-Credentials': true,
+};
 
 export const importProductsFile = async (event) => {
-  if (!event?.queryStringParameters?.name)
-    return {
-      statusCode: 400,
-      body: 'Incorrect name parameter',
-    };
-
   try {
     const url = await s3.getSignedUrlPromise('putObject', mapParams(event?.queryStringParameters?.name));
-    console.log({ url });
     return {
       statusCode: 200,
-      body: JSON.stringify({ url }),
+      headers: CORS_HEADERS,
+      body: url,
     };
   } catch (e) {
     return {
       statusCode: 500,
+      headers: CORS_HEADERS,
       body: 'Server error',
     };
   }
 };
-
-importProductsFile({
-  queryStringParameters: {
-    name: 'BsdsadaOBB',
-  },
-});
