@@ -15,9 +15,9 @@ const CORS_HEADERS = {
 const importProductsFile = async (event) => {
   if (!event?.queryStringParameters?.name)
     return {
-      statusCode: 500,
+      statusCode: 400,
       headers: CORS_HEADERS,
-      body: 'Name is required',
+      body: 'Name is a required paramater',
     };
 
   const s3 = new AWS.S3({ region: 'eu-central-1' });
