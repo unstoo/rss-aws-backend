@@ -15,8 +15,10 @@ const CORS_HEADERS = {
 };
 
 export const importProductsFile = async (event) => {
+  const fileName = decodeURIComponent(event.queryStringParameters.name);
+
   try {
-    const url = await s3.getSignedUrlPromise('putObject', mapParams(event.queryStringParameters.name));
+    const url = await s3.getSignedUrlPromise('putObject', mapParams(fileName));
     return {
       statusCode: 200,
       headers: CORS_HEADERS,

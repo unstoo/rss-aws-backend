@@ -7,8 +7,8 @@ const originFolder = 'uploaded';
 const targetFolder = 'parsed';
 
 export const importFileParser = async (event) => {
-  const objectKey = event.Records[0].s3.object.key;
-  console.log({ objectKey: objectKey })
+  const objectKey = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
+
   try {
     const s3Stream = await s3.getObject({
       Bucket: BUCKET,
