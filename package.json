@@ -22,8 +22,5 @@
   "devDependencies": {
     "jest": "^28.1.1",
     "serverless-auto-swagger": "^2.5.1"
-  },
-  "dependencies": {
-    "aws": "^0.0.3-2"
   }
 }
