@@ -29,7 +29,7 @@ describe('importProductsFile lambda', () => {
     expect(result.body).toContain(restAPILambdaProxyEvent.queryStringParameters.name);
   })
 
-  it('returns status code 500 if name is missing', async () => {
+  it('returns status code 400 if name is missing', async () => {
     const restAPILambdaProxyEvent = {
       queryStringParameters: {
         age: 22
@@ -37,6 +37,6 @@ describe('importProductsFile lambda', () => {
     };
     const result = await importProductsFile(restAPILambdaProxyEvent);
 
-    expect(result.statusCode).toEqual(500);
+    expect(result.statusCode).toEqual(400);
   })
 });
