@@ -1,12 +1,10 @@
-import AWS from 'aws-sdk';
-import csv from 'csv-parser';
+const AWS = require('aws-sdk');
+const csv = require('csv-parser');
 
-const s3 = new AWS.S3({ region: 'eu-central-1' });
 const BUCKET = 'csv-products-unstoo';
-const originFolder = 'uploaded';
-const targetFolder = 'parsed';
 
-export const importFileParser = async (event) => {
+const importFileParser = async (event) => {
+  const s3 = new AWS.S3({ region: 'eu-central-1' });
   const objectKey = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
 
   try {
@@ -31,7 +29,6 @@ export const importFileParser = async (event) => {
       VersionId: 'null',
     }).promise();
   } catch (e) {
-    console.log({ failedToParse: e })
     return {
       statusCode: 500,
       body: String(e),
@@ -43,3 +40,5 @@ export const importFileParser = async (event) => {
     body: 'Parsed',
   };
 };
+
+module.exports = importFileParser;

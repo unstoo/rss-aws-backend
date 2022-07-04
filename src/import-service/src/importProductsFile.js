@@ -1,6 +1,4 @@
-import AWS from 'aws-sdk';
-
-const s3 = new AWS.S3({ region: 'eu-central-1' });
+const AWS = require('aws-sdk');
 
 const mapParams = (fileName) => ({
   Bucket: 'csv-products-unstoo',
@@ -14,11 +12,20 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Credentials': true,
 };
 
-export const importProductsFile = async (event) => {
+const importProductsFile = async (event) => {
+  if (!event?.queryStringParameters?.name)
+    return {
+      statusCode: 500,
+      headers: CORS_HEADERS,
+      body: 'Name is required',
+    };
+
+  const s3 = new AWS.S3({ region: 'eu-central-1' });
+
   const fileName = decodeURIComponent(event.queryStringParameters.name);
 
   try {
-    const url = await s3.getSignedUrlPromise('putObject', mapParams(fileName));
+    const url = await s3.getSignedUrl('putObject', mapParams(fileName));
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
@@ -32,3 +39,5 @@ export const importProductsFile = async (event) => {
     };
   }
 };
+
+module.exports = importProductsFile;
