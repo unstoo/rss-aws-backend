@@ -6,7 +6,6 @@ const {
   REGION,
 } = process.env;
 const BUCKET = 'csv-products-unstoo';
-console.log({ SQS_URL, REGION });
 AWS.config.update({ region: REGION });
 
 const importFileParser = async (event) => {

@@ -1,6 +1,12 @@
 const store = require('./store');
+const AWS = require('aws-sdk');
+const {
+  TOPIC_ARN,
+  REGION,
+} = process.env;
 
 const catalogBatchProcess = async (event) => {
+  const sns = new AWS.SNS({ region: REGION });
   const parsedRecords = [];
   for (const { body } of event.Records) {
     const { error, result } = parseParams(body);
@@ -14,6 +20,13 @@ const catalogBatchProcess = async (event) => {
     const result = await store.addProduct(record);
     console.log({ result });
   }
+
+  const params = {
+    Message: JSON.stringify(parsedRecords, null, 2),
+    TopicArn: TOPIC_ARN
+  };
+
+  await sns.publish(params).promise();
 
   return { statusCode: 200 };
 };

@@ -3,6 +3,7 @@ frameworkVersion: '3'
 
 custom:
   queueName: catalogItemsQueue
+  topicName: createProductTopic
 
 provider:
   name: aws
@@ -28,6 +29,10 @@ provider:
         - "sqs:*"
       Resource:
         Fn::GetAtt: [ CatalogQueue, Arn ]
+    - Effect: "Allow"
+      Action:
+        - "sns:*"
+      Resource: { "Ref": "ProductTopic" }
 
 functions:
   importProductsFile:
@@ -55,6 +60,9 @@ functions:
           existing: true
   catalogBatchProcess:
     handler: index.catalogBatchProcess
+    environment:
+      TOPIC_ARN:
+        Ref: ProductTopic
     events:
       - sqs:
           arn:
@@ -67,3 +75,13 @@ resources:
       Type: "AWS::SQS::Queue"
       Properties:
         QueueName: ${self:custom.queueName}
+    ProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:custom.topicName}
+    ProductEmailSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+          Endpoint: unstoo@gmail.com
+          Protocol: email
+          TopicArn: { "Ref": "ProductTopic" }
