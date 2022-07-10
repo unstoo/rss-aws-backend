@@ -1,0 +1,37 @@
+service: import-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: eu-central-1
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        - "arn:aws:s3:::csv-products-unstoo/*"
+        - "arn:aws:s3:::csv-products-unstoo"
+
+functions:
+  importProductsFile:
+    handler: index.importProductsFile
+    events:
+      - http:
+          path: import
+          method: get
+          request:
+            parameters:
+              querystrings:
+                  name: true
+  importFileParser:
+    handler: index.importFileParser
+    events:
+      - s3:
+          bucket: csv-products-unstoo
+          event: s3:ObjectCreated:*
+          rules: 
+            - prefix: uploaded/
+            - suffix: .csv
+          existing: true

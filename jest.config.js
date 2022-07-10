@@ -8,6 +8,7 @@ module.exports = {
   coverageProvider: 'v8',
   transform: {},
   testMatch: [
-    "**/src/*.test.mjs"
+    "**/src/*.test.mjs",
+    "**/src/__tests__/*.test.mjs"
   ],
 };

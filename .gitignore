@@ -1,7 +1,9 @@
 # Dependency directories
 node_modules/
 coverage/
-product-service/.serverless
-product-service/node_modules/
 package-lock.json
 db-config.json
+
+
+**/node_modules
+**/.serverless
