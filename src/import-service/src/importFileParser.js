@@ -1,10 +1,17 @@
 const AWS = require('aws-sdk');
 const csv = require('csv-parser');
 
+const {
+  SQS_URL,
+  REGION,
+} = process.env;
 const BUCKET = 'csv-products-unstoo';
+console.log({ SQS_URL, REGION });
+AWS.config.update({ region: REGION });
 
 const importFileParser = async (event) => {
-  const s3 = new AWS.S3({ region: 'eu-central-1' });
+  const s3 = new AWS.S3();
+  const sqs = new AWS.SQS();
   const objectKey = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
 
   try {
@@ -15,6 +22,17 @@ const importFileParser = async (event) => {
 
     for await (const chunk of s3Stream.pipe(csv())) {
       console.log(chunk);
+
+      sqs.sendMessage({
+        QueueUrl: SQS_URL,
+        MessageBody: JSON.stringify(chunk),
+      }, function (err, data) {
+        if (err) {
+          console.log("Error", err);
+        } else {
+          console.log("Success", data.MessageId);
+        }
+      });
     }
 
     await s3.copyObject({

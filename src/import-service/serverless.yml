@@ -1,10 +1,20 @@
 service: import-service
 frameworkVersion: '3'
 
+custom:
+  queueName: catalogItemsQueue
+
 provider:
   name: aws
   runtime: nodejs16.x
   region: eu-central-1
+  environment:
+    user: ${file(../../db-config.json):user}
+    password: ${file(../../db-config.json):password}
+    database: ${file(../../db-config.json):database}
+    host: ${file(../../db-config.json):host}  
+    port: ${file(../../db-config.json):port}
+    REGION: "eu-central-1"
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -13,6 +23,11 @@ provider:
       Resource:
         - "arn:aws:s3:::csv-products-unstoo/*"
         - "arn:aws:s3:::csv-products-unstoo"
+    - Effect: "Allow"
+      Action:
+        - "sqs:*"
+      Resource:
+        Fn::GetAtt: [ CatalogQueue, Arn ]
 
 functions:
   importProductsFile:
@@ -27,6 +42,9 @@ functions:
                   name: true
   importFileParser:
     handler: index.importFileParser
+    environment:
+      SQS_URL:
+        Ref: CatalogQueue
     events:
       - s3:
           bucket: csv-products-unstoo
@@ -35,3 +53,17 @@ functions:
             - prefix: uploaded/
             - suffix: .csv
           existing: true
+  catalogBatchProcess:
+    handler: index.catalogBatchProcess
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt: [ CatalogQueue, Arn ]
+          batchSize: 5
+
+resources:
+  Resources:
+    CatalogQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: ${self:custom.queueName}
