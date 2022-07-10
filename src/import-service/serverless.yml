@@ -65,9 +65,9 @@ functions:
         Ref: ProductTopic
     events:
       - sqs:
+          batchSize: 5
           arn:
             Fn::GetAtt: [ CatalogQueue, Arn ]
-          batchSize: 5
 
 resources:
   Resources:
@@ -82,6 +82,16 @@ resources:
     ProductEmailSubscription:
       Type: AWS::SNS::Subscription
       Properties:
-          Endpoint: unstoo@gmail.com
+          Endpoint: sns-unstoo-1@yopmail.com
           Protocol: email
           TopicArn: { "Ref": "ProductTopic" }
+          FilterPolicy:
+            type: ["regular"]
+    ProductEmailSubscriptionSecondary:
+      Type: AWS::SNS::Subscription
+      Properties:
+          Endpoint: sns-unstoo-admin@yopmail.com
+          Protocol: email
+          TopicArn: { "Ref": "ProductTopic" }
+          FilterPolicy:
+            type: ["critical"]

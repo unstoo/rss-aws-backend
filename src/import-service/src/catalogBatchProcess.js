@@ -23,8 +23,14 @@ const catalogBatchProcess = async (event) => {
 
   const params = {
     Message: JSON.stringify(parsedRecords, null, 2),
-    TopicArn: TOPIC_ARN
-  };
+    TopicArn: TOPIC_ARN,
+    MessageAttributes: {
+      type: {
+        DataType: 'String',
+        StringValue: 'critical'
+      },
+    },
+  }
 
   await sns.publish(params).promise();
 
