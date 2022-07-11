@@ -1,8 +1,8 @@
 const catalogBatchProcess = require('./catalogBatchProcess.js');
 
-const mockPublish = jest.fn(() => ({
+const mockPublish = jest.fn().mockReturnValue({
   promise: () => Promise.resolve(),
-}));
+});
 
 jest.mock('aws-sdk', () => {
   return {
@@ -19,6 +19,9 @@ jest.mock('./store', () => ({
   addProduct: record => record
 }));
 
+beforeEach(() => {
+  mockPublish.mockClear()
+});
 
 describe('catalogBatchProcess lambda', () => {
   it('sends an SNS message with a new product(s)', async () => {
@@ -36,7 +39,6 @@ describe('catalogBatchProcess lambda', () => {
   })
 
   it('doesnt send anything if product data is corrupted', async () => {
-    mockPublish.mockClear();
     const SqsLambdaEvent = {
       Records: [
         {
