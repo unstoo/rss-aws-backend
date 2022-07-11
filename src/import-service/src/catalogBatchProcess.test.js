@@ -1,22 +1,17 @@
 const catalogBatchProcess = require('./catalogBatchProcess.js');
 
-const mockPublish = jest.fn();
+const mockPublish = jest.fn(() => ({
+  promise: () => Promise.resolve(),
+}));
 
 jest.mock('aws-sdk', () => {
-  class snsMock {
-    constructor({ region }) {
-      this.region = region;
-    }
-    publish({ Message, TopicArn, MessageAttributes }) {
-      mockPublish({ Message, TopicArn, MessageAttributes });
-      return {
-        promise: () => Promise.resolve(),
-      };
-    }
-  }
   return {
     ...jest.requireActual('aws-sdk'),
-    SNS: snsMock,
+    SNS: function () {
+      return {
+        publish: mockPublish
+      };
+    },
   };
 });
 
@@ -40,7 +35,7 @@ describe('catalogBatchProcess lambda', () => {
     expect(mockPublish.mock.calls[0][0].Message).toEqual('[' + SqsLambdaEvent.Records[0].body + ']');
   })
 
-  it('doesnt send anything if product data are corrupted', async () => {
+  it('doesnt send anything if product data is corrupted', async () => {
     mockPublish.mockClear();
     const SqsLambdaEvent = {
       Records: [
