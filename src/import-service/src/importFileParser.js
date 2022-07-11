@@ -20,8 +20,6 @@ const importFileParser = async (event) => {
     }).createReadStream();
 
     for await (const chunk of s3Stream.pipe(csv())) {
-      console.log(chunk);
-
       sqs.sendMessage({
         QueueUrl: SQS_URL,
         MessageBody: JSON.stringify(chunk),
