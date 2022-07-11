@@ -15,14 +15,12 @@ const catalogBatchProcess = async (event) => {
 
     parsedRecords.push(result);
   }
-
   for await (const record of parsedRecords) {
     const result = await store.addProduct(record);
-    console.log({ result });
   }
 
   const params = {
-    Message: JSON.stringify(parsedRecords, null, 2),
+    Message: JSON.stringify(parsedRecords),
     TopicArn: TOPIC_ARN,
     MessageAttributes: {
       type: {

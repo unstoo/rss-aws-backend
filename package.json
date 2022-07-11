@@ -6,7 +6,8 @@
   "scripts": {
     "deploy:product": "cd ./src/product-service && sls deploy && cd ../..",
     "deploy:import": "cd ./src/import-service && sls deploy && cd ../..",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:import-service": "cd ./src/import-service && npm test && cd ../.."
   },
   "repository": {
     "type": "git",
